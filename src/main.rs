@@ -63,7 +63,7 @@ impl Sever {
         loop {
             match accept_connect(listener) {
                 Ok(stream) => {
-                    stream.set_nonblocking(false).expect("set_nonblocking failed!");
+                    stream.set_nonblocking(false).expect("Set blocking failed!");
                     listener.set_nonblocking(false).expect("Set blocking failed!");
                     return stream;
                 }

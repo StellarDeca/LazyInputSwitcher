@@ -8,7 +8,7 @@ const MAX_MESSAGE_SIZE: usize = 4096;
 
 /// 让系统分配可用端口 并返回端口 与 socket
 pub(crate) fn init_socket() -> io::Result<(u16, TcpListener)> {
-    let listener = TcpListener::bind("127.0.0.1:25565")?;
+    let listener = TcpListener::bind("127.0.0.1:0")?;
     let addr = listener.local_addr()?;
     let port = addr.port();
     Ok((port, listener))
