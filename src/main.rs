@@ -63,6 +63,7 @@ impl Sever {
         loop {
             match accept_connect(listener) {
                 Ok(stream) => {
+                    stream.set_nonblocking(false).expect("set_nonblocking failed!");
                     listener.set_nonblocking(false).expect("Set blocking failed!");
                     return stream;
                 }
@@ -90,7 +91,7 @@ impl Sever {
             let response = match request {
                 Ok(req) => {
                     match req.command {
-                        CommandMode::Command => self._grammar_analysis(&req),
+                        CommandMode::Command => self._grammar_analysis(cid, &req),
                         CommandMode::Exit => {
                             eprintln!("Exiting server");
                             std::process::exit(0);
@@ -116,7 +117,7 @@ impl Sever {
         }
     }
 
-    fn _grammar_analysis(&mut self, request: &ClientRequest) -> ClientResponse {
+    fn _grammar_analysis(&mut self, cid: u16, request: &ClientRequest) -> ClientResponse {
         // 处理命令：需要 language、code、cursor
         let params = &request.params;
         let language = SupportLanguage::from_string(&params.language);
@@ -150,6 +151,6 @@ impl Sever {
             InputMethodMode::Native
         };
         let res = CommandResult { grammar: comment, method: input_method };
-        ClientResponse::new(request.cid, true, error, Some(res))
+        ClientResponse::new(cid, true, error, Some(res))
     }
 }
