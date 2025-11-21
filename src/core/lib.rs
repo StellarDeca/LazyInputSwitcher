@@ -60,9 +60,7 @@ impl SupportLanguage {
 
     /// 将枚举转换为对应的小写字符串。
     pub fn to_string(&self) -> String {
-        match self {
-            SupportLanguage::Rust => "rust".to_string(),
-        }
+        serde_json::to_string(&self).unwrap().trim_matches('"').to_lowercase()
     }
 }
 
