@@ -3,15 +3,15 @@ mod switch;
 mod parser;
 mod rpc;
 
-use crate::rpc::*;
-use crate::parser::Parser;
-use crate::switch::Switcher;
 use crate::core::{InputMethodMode, SupportLanguage};
+use crate::parser::Parser;
+use crate::rpc::*;
+use crate::switch::Switcher;
 
 use std::io;
-use std::time::{Duration, Instant};
 use std::net::{TcpListener, TcpStream};
 use std::sync::atomic::{AtomicU16, Ordering};
+use std::time::{Duration, Instant};
 
 /// 若长时间无客户端连接则退出（秒）
 const IDLE_ACCEPT_TIMEOUT_SECS: u64 = 300;
@@ -56,16 +56,31 @@ impl Sever {
     }
 
     fn accept_client(&self, listener: &TcpListener) -> TcpStream {
-        let accept_deadline = Instant::now() + Duration::from_secs(IDLE_ACCEPT_TIMEOUT_SECS);
-        while Instant::now() < accept_deadline {
-            match accept_connect(&listener) {
-                Ok(s) => return s,
-                Err(_) => continue,
+        // 轮询监听，无连接睡眠，超时自动退出
+        listener.set_nonblocking(true).expect("Set non-blocking failed!");
+        let mut timeout = Duration::from_secs(IDLE_ACCEPT_TIMEOUT_SECS);
+        let mut deadline = Instant::now() + timeout;
+        loop {
+            match accept_connect(listener) {
+                Ok(stream) => {
+                    listener.set_nonblocking(false).expect("Set blocking failed!");
+                    return stream;
+                }
+                Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
+                    if Instant::now() >= deadline {
+                        eprintln!("Exiting server");
+                        std::process::exit(0);
+                    }
+                    std::thread::sleep(Duration::from_millis(50));
+                    continue;
+                }
+                Err(_) => {
+                    timeout = Duration::from_secs(IDLE_ACCEPT_TIMEOUT_SECS);
+                    deadline = Instant::now() + timeout;
+                    continue;
+                }
             }
-        };
-        // 等待超时结束程序
-        eprintln!("Exiting server");
-        std::process::exit(0);
+        }
     }
 
     fn handle_client(&mut self, cid: u16, client: &mut TcpStream) -> io::Result<()> {

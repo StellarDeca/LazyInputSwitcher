@@ -1,4 +1,5 @@
 mod rust;
+mod python;
 
 use tree_sitter::{Language, Query};
 use crate::core::SupportLanguage;
@@ -7,7 +8,8 @@ pub(super) struct Adapter;
 impl Adapter {
     pub(super) fn adapter(type_: &SupportLanguage) -> Box<dyn LanguageAdapter> {
         match type_ {
-            SupportLanguage::Rust => Box::new(rust::RustAdapter),
+            SupportLanguage::Rust => Box::new(rust::Adapter),
+            SupportLanguage::Python => Box::new(python::Adapter),
         }
     }
 }
