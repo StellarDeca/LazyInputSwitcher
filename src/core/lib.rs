@@ -9,7 +9,7 @@ use serde::{Serialize, Deserialize};
 ///
 /// **用法示例:**
 /// ```rust
-/// use lazyime::InputMethodMode;
+/// use crate::core::InputMethodMode;
 ///
 /// let mode = InputMethodMode::Native;
 /// assert_eq!(mode.to_string(), "native");
@@ -38,6 +38,7 @@ impl Display for InputMethodMode {
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 pub enum SupportLanguage {
     Rust,
+    Python,
 }
 impl SupportLanguage {
     /// 尝试将字符串转换为 [`SupportLanguage`] 枚举。
@@ -45,14 +46,17 @@ impl SupportLanguage {
     /// 转换是大小写不敏感的。
     ///
     /// ```rust
-    /// use lazyime::SupportLanguage;
+    /// use crate::core::InputMethodMode;
     ///
     /// assert_eq!(SupportLanguage::from_string("Rust".to_string()), Some(SupportLanguage::Rust));
     /// assert!(SupportLanguage::from_string("python".to_string()).is_none());
     /// ```
     pub fn from_string(s: &String) -> Option<SupportLanguage> {
-        if s.to_lowercase() == "rust" {
+        let lang = s.to_lowercase();
+        if lang == "rust" {
             Some(SupportLanguage::Rust)
+        } else if lang == "python" {
+            Some(SupportLanguage::Python)
         } else {
             None
         }

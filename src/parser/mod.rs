@@ -120,7 +120,6 @@ pub fn main() { println!("Hello World!"); }
         parser.add_language(lang);
         parser.update_tree(lang, code);
         let res = parser.get_comments(lang, code);
-        println!("{:?}", res.nodes_range);
         // 判断 TS 解析是否正常, 检查边界条件 与 内部条件 文档注释同样视为单行注释 或 块注释
         // 单行注释
         assert_eq!(res.in_range(&Cursor::new(1, 0)), false);

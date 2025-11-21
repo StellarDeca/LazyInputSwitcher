@@ -1,20 +1,20 @@
 use super::LanguageAdapter;
 use tree_sitter::{Language, Query};
-use tree_sitter_rust::LANGUAGE as rust_;
+use tree_sitter_python::LANGUAGE as python_;
 
 const QUERY: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/src/static/TreeSitterQuery/rust.scm"
+    "/src/static/TreeSitterQuery/python.scm"
 ));
 
 pub(super) struct Adapter;
 
 impl LanguageAdapter for Adapter {
     fn get_language(&self) -> Language {
-        rust_.into()
+        python_.into()
     }
 
     fn get_comment_query(&self) -> Query {
-        Query::new(&rust_.into(), QUERY).unwrap()
+        Query::new(&python_.into(), QUERY).unwrap()
     }
 }
