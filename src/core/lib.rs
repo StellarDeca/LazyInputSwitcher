@@ -39,6 +39,7 @@ impl Display for InputMethodMode {
 pub enum SupportLanguage {
     Rust,
     Python,
+    Lua,
 }
 impl SupportLanguage {
     /// 尝试将字符串转换为 [`SupportLanguage`] 枚举。
@@ -57,6 +58,8 @@ impl SupportLanguage {
             Some(SupportLanguage::Rust)
         } else if lang == "python" {
             Some(SupportLanguage::Python)
+        } else if lang == "lua" {
+            Some(SupportLanguage::Lua)
         } else {
             None
         }

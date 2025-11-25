@@ -1,5 +1,6 @@
 mod rust;
 mod python;
+mod lua;
 
 use tree_sitter::{Language, Query};
 use crate::core::SupportLanguage;
@@ -10,6 +11,7 @@ impl Adapter {
         match type_ {
             SupportLanguage::Rust => Box::new(rust::Adapter),
             SupportLanguage::Python => Box::new(python::Adapter),
+            SupportLanguage::Lua => Box::new(lua::Adapter),
         }
     }
 }
