@@ -1,29 +1,31 @@
-mod language;
 
-use language::*;
+mod adapter;
+
+use adapter::*;
 use crate::core::*;
 use std::collections::HashMap;
 use tree_sitter::{Node, Query, QueryCursor, Range, StreamingIterator, Tree};
 
 pub(super) struct Parser {
+    adapter: Adapter,
     trees: HashMap<String, Option<Tree>>,
     parsers: HashMap<String, tree_sitter::Parser>,
     query: HashMap<String, Query>,
 }
 impl Parser {
     pub(super) fn new() -> Parser {
+        let adapter = Adapter::new();
         let parsers = HashMap::new();
         let query = HashMap::new();
         let trees = HashMap::new();
-        Parser { parsers, query, trees }
+        Parser { adapter, parsers, query, trees }
     }
 
     pub(super) fn add_language(&mut self, type_: &SupportLanguage) {
-        let adapter = Adapter::adapter(&type_);
         let mut parser = tree_sitter::Parser::new();
-        let query = adapter.get_comment_query();
+        let query = self.adapter.get_comment_query(type_);
 
-        parser.set_language(&adapter.get_language()).unwrap();
+        parser.set_language(self.adapter.get_language(type_)).unwrap();
         self.parsers.insert(type_.to_string(), parser);
         self.query.insert(type_.to_string(), query);
     }
