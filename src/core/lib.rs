@@ -35,7 +35,7 @@ impl Display for InputMethodMode {
 /// 表示当前支持的编程语言。
 ///
 /// 主要用于配置或通知客户端当前编辑器/进程正在使用的语言环境。
-#[derive(Serialize, Deserialize, Debug, Copy, Clone)]
+#[derive(Serialize, Deserialize, Debug, Copy, Clone, Hash, Eq, PartialEq)]
 pub enum SupportLanguage {
     Rust,
     Python,
@@ -43,6 +43,8 @@ pub enum SupportLanguage {
     C,
 }
 impl SupportLanguage {
+    /// SupportLanguage为可 哈希的，提高哈希表可读性
+    /// 
     /// 尝试将字符串转换为 [`SupportLanguage`] 枚举。
     ///
     /// 转换是大小写不敏感的。

@@ -8,9 +8,9 @@ use tree_sitter::{Node, Query, QueryCursor, Range, StreamingIterator, Tree};
 
 pub(super) struct Parser {
     adapter: Adapter,
-    trees: HashMap<String, Option<Tree>>,
-    parsers: HashMap<String, tree_sitter::Parser>,
-    query: HashMap<String, Query>,
+    trees: HashMap<SupportLanguage, Option<Tree>>,
+    parsers: HashMap<SupportLanguage, tree_sitter::Parser>,
+    query: HashMap<SupportLanguage, Query>,
 }
 impl Parser {
     pub(super) fn new() -> Parser {
@@ -21,19 +21,18 @@ impl Parser {
         Parser { adapter, parsers, query, trees }
     }
 
-    pub(super) fn add_language(&mut self, type_: &SupportLanguage) {
+    pub(super) fn add_language(&mut self, type_: SupportLanguage) {
         let mut parser = tree_sitter::Parser::new();
         let query = self.adapter.get_comment_query(type_);
 
         parser.set_language(self.adapter.get_language(type_)).unwrap();
-        self.parsers.insert(type_.to_string(), parser);
-        self.query.insert(type_.to_string(), query);
+        self.parsers.insert(type_, parser);
+        self.query.insert(type_, query);
     }
 
-    pub(super) fn update_tree(&mut self, type_: &SupportLanguage, code: &String) {
+    pub(super) fn update_tree(&mut self, type_: SupportLanguage, code: &String) {
         // 如果tree不存在，则自动新建树
         let tree: Option<Tree>;
-        let type_ = type_.to_string();
         let parser = self.parsers.get_mut(&type_).unwrap();
         if let Some(old_tree) = self.trees.get(&type_) {
             tree = parser.parse(code.as_bytes(), Option::from(old_tree));
@@ -43,8 +42,7 @@ impl Parser {
         self.trees.insert(type_, tree);
     }
 
-    pub(super) fn get_comments(&mut self, type_: &SupportLanguage, code: &String, ) -> NodesRange {
-        let type_ = type_.to_string();
+    pub(super) fn get_comments(&mut self, type_: SupportLanguage, code: &String, ) -> NodesRange {
         let mut node_range = NodesRange::new();
         if let Some(tree) = self.trees.get(&type_).unwrap() {
             let root = tree.root_node();
@@ -118,7 +116,7 @@ pub fn main() { println!("Hello World!"); }
 **/
         "#.to_string();
         let mut parser = Parser::new();
-        let lang = &SupportLanguage::Rust;
+        let lang = SupportLanguage::Rust;
         parser.add_language(lang);
         parser.update_tree(lang, code);
         let res = parser.get_comments(lang, code);
@@ -134,5 +132,4 @@ pub fn main() { println!("Hello World!"); }
         assert_eq!(res.in_range(&Cursor::new(5, 2)), true);
         assert_eq!(res.in_range(&Cursor::new(5, 3)), false);
     }
-
 }

@@ -4,7 +4,7 @@ use std::path::PathBuf;
 use tree_sitter::{Language, Query};
 
 pub(super) struct Adapter {
-    language: HashMap<&'static str, Language>,
+    language: HashMap<SupportLanguage, Language>,
 }
 impl Adapter {
     pub(super) fn new() -> Adapter {
@@ -14,21 +14,21 @@ impl Adapter {
         use tree_sitter_python::LANGUAGE as python_;
         use tree_sitter_rust::LANGUAGE as rust_;
 
-        let mut language: HashMap<&'static str, Language> = HashMap::new();
-        language.insert("rust", rust_.into());
-        language.insert("python", python_.into());
-        language.insert("lua", lua_.into());
-        language.insert("c", c_.into());
+        let mut language: HashMap<SupportLanguage, Language> = HashMap::new();
+        language.insert(SupportLanguage::Rust, rust_.into());
+        language.insert(SupportLanguage::Python, python_.into());
+        language.insert(SupportLanguage::Lua, lua_.into());
+        language.insert(SupportLanguage::C, c_.into());
 
         Adapter { language }
     }
 
-    pub(super) fn get_language(&self, type_: &SupportLanguage) -> &Language {
-        let res = self.language.get(type_.to_string().as_str());
+    pub(super) fn get_language(&self, type_: SupportLanguage) -> &Language {
+        let res = self.language.get(&type_);
         res.unwrap()
     }
 
-    pub(super) fn get_comment_query(&self, type_: &SupportLanguage) -> Query {
+    pub(super) fn get_comment_query(&self, type_: SupportLanguage) -> Query {
         // 构造 query 文件路径并动态加载
         let relative_path = format!("/src/static/TreeSitterQuery/{}.scm", type_.to_string());
         let mut absolute_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
