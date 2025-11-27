@@ -1,6 +1,5 @@
-use crate::core::SupportLanguage;
+use crate::core::{SupportLanguage, StaticTreeSitterQuery as STSQuery};
 use std::collections::HashMap;
-use std::path::PathBuf;
 use tree_sitter::{Language, Query};
 
 pub(super) struct Adapter {
@@ -29,12 +28,9 @@ impl Adapter {
     }
 
     pub(super) fn get_comment_query(&self, type_: SupportLanguage) -> Query {
-        // 构造 query 文件路径并动态加载
-        let relative_path = format!("/src/static/TreeSitterQuery/{}.scm", type_.to_string());
-        let mut absolute_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        absolute_path.push(&relative_path.trim_start_matches('/'));
-
-        let query_code = std::fs::read_to_string(absolute_path).unwrap();
-        Query::new(self.get_language(type_), query_code.as_str()).unwrap()
+        // 加载 query 文件并 初始化 Query
+        let query_file = STSQuery::get(&format!("{}.scm", type_.to_string())).unwrap();
+        let query_code = std::str::from_utf8(&query_file.data).unwrap();
+        Query::new(self.get_language(type_), query_code).unwrap()
     }
 }

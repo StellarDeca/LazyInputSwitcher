@@ -1,4 +1,5 @@
 //! 全局公用的 结构体 与 枚举
+use rust_embed::RustEmbed;
 use std::fmt::Display;
 use serde::{Serialize, Deserialize};
 
@@ -85,3 +86,10 @@ pub struct Cursor {
     /// 光标所在的列号 0基
     pub column: usize,
 }
+
+/// 静态资源文件打包
+/// 把 static 文件夹中的静态资源打包进 可执行文件中
+/// 通过API访问且无额外开销
+#[derive(RustEmbed)]
+#[folder = r"src/static/TreeSitterQuery/"]
+pub struct StaticTreeSitterQuery;
