@@ -3,8 +3,8 @@
 use std::io::{self, Read, Write};
 use std::net::{TcpListener, TcpStream};
 
-/// 限制 缓冲区最大大小为 4096 个字节
-const MAX_MESSAGE_SIZE: usize = 4096;
+/// 限制 缓冲区最大大小为 512 千字节
+const MAX_MESSAGE_SIZE: usize = 512 * 1024;
 
 /// 让系统分配可用端口 并返回端口 与 socket
 pub(crate) fn init_socket() -> io::Result<(u16, TcpListener)> {
