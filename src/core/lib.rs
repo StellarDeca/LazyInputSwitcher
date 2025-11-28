@@ -42,6 +42,7 @@ pub enum SupportLanguage {
     Python,
     Lua,
     C,
+    Java,
 }
 impl SupportLanguage {
     /// SupportLanguage为可 哈希的，提高哈希表可读性
@@ -66,6 +67,8 @@ impl SupportLanguage {
             Some(SupportLanguage::Lua)
         } else if lang == "c" {
             Some(SupportLanguage::C)
+        } else if lang == "java" {
+            Some(SupportLanguage::Java)
         }
         else {
             None
