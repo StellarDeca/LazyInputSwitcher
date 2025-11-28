@@ -70,7 +70,7 @@ impl SupportLanguage {
             Some(SupportLanguage::C)
         } else if lang == "java" {
             Some(SupportLanguage::Java)
-        } else if lang == "java_script" {
+        } else if lang == "javascript" {
             Some(SupportLanguage::JavaScript)
         }
         else {
