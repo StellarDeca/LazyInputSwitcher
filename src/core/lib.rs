@@ -43,6 +43,7 @@ pub enum SupportLanguage {
     Lua,
     C,
     Java,
+    JavaScript,
 }
 impl SupportLanguage {
     /// SupportLanguage为可 哈希的，提高哈希表可读性
@@ -69,6 +70,8 @@ impl SupportLanguage {
             Some(SupportLanguage::C)
         } else if lang == "java" {
             Some(SupportLanguage::Java)
+        } else if lang == "java_script" {
+            Some(SupportLanguage::JavaScript)
         }
         else {
             None

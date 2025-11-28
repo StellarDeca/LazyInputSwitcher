@@ -13,6 +13,7 @@ impl Adapter {
         use tree_sitter_python::LANGUAGE as python_;
         use tree_sitter_rust::LANGUAGE as rust_;
         use tree_sitter_java::LANGUAGE as java_;
+        use tree_sitter_javascript::LANGUAGE as javascript_;
 
         let mut language: HashMap<SupportLanguage, Language> = HashMap::new();
         language.insert(SupportLanguage::Rust, rust_.into());
@@ -20,6 +21,7 @@ impl Adapter {
         language.insert(SupportLanguage::Lua, lua_.into());
         language.insert(SupportLanguage::C, c_.into());
         language.insert(SupportLanguage::Java, java_.into());
+        language.insert(SupportLanguage::JavaScript, javascript_.into());
 
         Adapter { language }
     }
