@@ -29,7 +29,7 @@ impl StaticLinuxMethodShell {
 
         // 处理执行结果
         if output.status.success() {
-            Ok(String::from_utf8_lossy(&output.stdout).to_string())
+            Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
         } else {
             Err(format!("Script failed: {}", String::from_utf8_lossy(&output.stderr)).into())
         }
