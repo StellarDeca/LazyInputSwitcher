@@ -15,13 +15,17 @@ impl StaticLinuxMethodShell {
     }
 
     /// 运行shell代码并获取结果
-    pub(super) fn run_script(name: &str) -> Result<String, Box<dyn Error>> {
+    pub(super) fn run_script(name: &str, args: Option<&[&str]>) -> Result<String, Box<dyn Error>> {
         // 将script交给bash解释器去执行，规避了权限问题与临时文件的问题
         let script = StaticLinuxMethodShell::get_script(name);
-        let output = Command::new("bash")
-            .arg("-c") // 执行 字符串bash脚本
-            .arg(script)
-            .output()?;
+        let mut command = Command::new("bash");
+        command.arg("-c").arg(script).arg("bash_script.sh");   // 注意 $0 占位符
+        if let Some(args) = args {
+            for arg in args.iter() {
+                command.arg(arg);
+            }
+        }
+        let output = command.output()?;
 
         // 处理执行结果
         if output.status.success() {
@@ -38,7 +42,7 @@ pub(super) enum SupportMethod {
 }
 impl SupportMethod {
     fn check_input_method() -> Option<SupportMethod> {
-        let method = StaticLinuxMethodShell::run_script("check");
+        let method = StaticLinuxMethodShell::run_script("check", None);
         match method {
             Ok(output) => {
                 if output == "Fcitx5" {
