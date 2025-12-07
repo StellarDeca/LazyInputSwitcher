@@ -21,11 +21,12 @@ pub(super) struct Switcher {
 impl Switcher {
     pub(super) fn new() -> Result<Switcher, String> {
         #[cfg(target_os = "windows")]
-        let windows_controller = match windows::WinInputMethodController::new() {
-            Ok(windows_controller) => windows_controller,
-            Err(err) => return Err(err),
+        return match windows::WinInputMethodController::new() {
+            Ok(windows_controller) => {
+                Ok(Switcher { windows_controller })
+            },
+            Err(err) => Err(err),
         };
-        Ok(Switcher { windows_controller })
     }
 
     pub(super) fn query(&self) -> InputMethodMode {
