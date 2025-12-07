@@ -38,22 +38,15 @@ impl StaticLinuxMethodShell {
 
 pub(super) enum SupportMethod {
     Fcitx5,
-    Ibus,
 }
 impl SupportMethod {
     fn check_input_method() -> Option<SupportMethod> {
-        let method = StaticLinuxMethodShell::run_script("check", None);
-        match method {
-            Ok(output) => {
-                if output == "Fcitx5" {
-                    Some(SupportMethod::Fcitx5)
-                } else if output == "Ibus" {
-                    Some(SupportMethod::Ibus)
-                } else {
-                    None
-                }
+        let fcitx5 = StaticLinuxMethodShell::run_script("fcitx5/check", None);
+        if fcitx5.is_ok() {
+            if fcitx5.unwrap().to_lowercase() == "fcitx5" {
+                return Some(SupportMethod::Fcitx5)
             }
-            Err(_) => None,
-        }
+        };
+        None
     }
 }
