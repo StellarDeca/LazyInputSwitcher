@@ -40,7 +40,7 @@ pub(super) enum SupportMethod {
     Fcitx5,
 }
 impl SupportMethod {
-    fn check_input_method() -> Option<SupportMethod> {
+    pub(super) fn check_input_method() -> Option<SupportMethod> {
         let fcitx5 = StaticLinuxMethodShell::run_script("fcitx5/check", None);
         if fcitx5.is_ok() {
             if fcitx5.unwrap().to_lowercase() == "fcitx5" {
