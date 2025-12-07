@@ -12,6 +12,7 @@ mod macos;
 #[cfg(target_os = "linux")]
 mod linux;
 
+use std::error::Error;
 use crate::core::InputMethodMode;
 
 pub(super) struct Switcher {
@@ -19,14 +20,12 @@ pub(super) struct Switcher {
     windows_controller: windows::WinInputMethodController,
 }
 impl Switcher {
-    pub(super) fn new() -> Result<Switcher, String> {
+    pub(super) fn new() -> Result<Switcher, Box<dyn Error>> {
         #[cfg(target_os = "windows")]
-        return match windows::WinInputMethodController::new() {
-            Ok(windows_controller) => {
-                Ok(Switcher { windows_controller })
-            },
-            Err(err) => Err(err),
-        };
+        match windows::WinInputMethodController::new() {
+            Ok(windows_controller) => Ok(Switcher { windows_controller }),
+            Err(err) => Err(err.into()),
+        }
     }
 
     pub(super) fn query(&self) -> InputMethodMode {
