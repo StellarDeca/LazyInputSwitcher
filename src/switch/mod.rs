@@ -52,7 +52,7 @@ impl Switcher {
             return Ok::<bool, Box<dyn Error>>(self.windows_controller.switch_mode(target_mode));
 
             #[cfg(target_os = "linux")]
-            return self.linux_controller.switch_mode(mode);
+            return self.linux_controller.switch(mode);
         };
         Ok(true)
     }
