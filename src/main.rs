@@ -138,18 +138,13 @@ impl Sever {
             GrammarMode::Comment => { self.switcher.switch(InputMethodMode::Native) },
             GrammarMode::Code => { self.switcher.switch(InputMethodMode::English) }
         };
-        let error = if switch { None } else {
-            Some("Switch input method failed".to_string())
+        let error = match switch {
+            Ok(s) => {
+                if s { None } else { Some("Switch input method failed".to_string()) }
+            },
+            Err(e) => Option::from(e.to_string())
         };
-        let input_method = if comment.as_bool() && switch {
-            InputMethodMode::Native
-        } else if comment.as_bool() && !switch {
-            InputMethodMode::English
-        } else if !comment.as_bool() && switch {
-            InputMethodMode::English
-        } else {
-            InputMethodMode::Native
-        };
+        let input_method = self.switcher.query().unwrap_or_else(|_| InputMethodMode::English);
         let res = CommandResult { grammar: comment, method: input_method };
         ClientResponse::new(cid, true, error, Some(res))
     }
