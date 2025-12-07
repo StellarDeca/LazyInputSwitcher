@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 
 # 设置fcitx5为活动状态并切换当前活动输入法到指定输入法
 TARGET_IM="$1"

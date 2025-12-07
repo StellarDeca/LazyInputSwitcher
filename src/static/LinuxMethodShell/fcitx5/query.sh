@@ -1,4 +1,4 @@
-# !/bin/bash
+#!/bin/bash
 
 # 设置fcitx5为活动状态并查询当前活动输入法
 STATUS=$(fcitx5-remote &> /dev/null)
