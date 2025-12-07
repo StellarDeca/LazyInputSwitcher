@@ -45,7 +45,7 @@ impl Switcher {
         self.linux_controller.query()
     }
 
-    pub(super) fn switch(&self, target_mode: InputMethodMode) -> bool {
+    pub(super) fn switch(&self, target_mode: InputMethodMode) -> Result<bool, Box<dyn Error>> {
         let mode = self.query();
         #[cfg(target_os = "windows")]
         if target_mode != mode {
@@ -54,6 +54,6 @@ impl Switcher {
             #[cfg(target_os = "linux")]
             return self.linux_controller.switch_mode(mode);
         };
-        true
+        Ok(true)
     }
 }
