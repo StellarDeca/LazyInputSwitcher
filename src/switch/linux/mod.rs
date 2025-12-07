@@ -3,4 +3,3 @@
 
 mod lib;
 mod fcitx5;
-mod ibus;
