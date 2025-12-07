@@ -23,14 +23,7 @@ pub(crate) enum GrammarMode {
 }
 impl GrammarMode {
     pub(crate) fn from_bool(in_comment: bool) -> GrammarMode {
-        if in_comment { GrammarMode::Comment } else { GrammarMode::Code}
-    }
-
-    pub(crate) fn as_bool(&self) -> bool {
-        match self {
-            GrammarMode::Code => { false }
-            GrammarMode::Comment => { true }
-        }
+        if in_comment { GrammarMode::Comment } else { GrammarMode::Code }
     }
 }
 
