@@ -1,6 +1,6 @@
 [package]
 name = "LazyInputSwitcher"
-version = "0.2.0"
+version = "0.1.0"
 edition = "2024"
 
 [build-dependencies]
@@ -15,6 +15,11 @@ windows = { version = "0.62.2", features = [
 
 [target.'cfg(target_os = "linux")'.dependencies]
 configparser = "3.1.0"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+libc = "0.2.1"
+core-foundation = "0.10.1"
+core-foundation-sys = "0.8.7"
 
 [dependencies.serde]
 version = "1.0.228"
