@@ -89,19 +89,19 @@ pub(crate) struct CommandParams {
     pub(crate) params: serde_json::Value,
 }
 impl CommandParams {
-    pub(crate) fn to_analyze_params(self) -> Result<String, serde_json::Error> {
+    pub(crate) fn to_analyze_params(self) -> Result<AnalyzeParams, serde_json::Error> {
         serde_json::from_value(self.params)
     }
 
-    pub(crate) fn to_method_only_params(self) -> Result<String, serde_json::Error> {
+    pub(crate) fn to_method_only_params(self) -> Result<MethodOnlyParams, serde_json::Error> {
         serde_json::from_value(self.params)
     }
 
-    pub(crate) fn to_switch_params(self) -> Result<String, serde_json::Error> {
+    pub(crate) fn to_switch_params(self) -> Result<SwitchParams, serde_json::Error> {
         serde_json::from_value(self.params)
     }
 
-    pub(crate) fn to_exit_params(self) -> Result<String, serde_json::Error> {
+    pub(crate) fn to_exit_params(self) -> Result<ExitParams, serde_json::Error> {
         serde_json::from_value(self.params)
     }
 }
