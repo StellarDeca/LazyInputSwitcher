@@ -64,25 +64,22 @@ pub(crate) enum CommandMode {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct AnalyzeParams {
-    code: String,
-    language: String,
-    cursor: Cursor,
+    pub(crate) code: String,
+    pub(crate) language: String,
+    pub(crate) cursor: Cursor,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct MethodOnlyParams {
-    mode: String,
+    pub(crate) mode: String,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct SwitchParams {
-    code: String,
-    language: String,
-    cursor: Cursor,
+    pub(crate) code: String,
+    pub(crate) language: String,
+    pub(crate) cursor: Cursor,
 }
-
-#[derive(Serialize, Deserialize, Debug)]
-pub(crate) struct ExitParams;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub(crate) struct CommandParams {
@@ -98,10 +95,6 @@ impl CommandParams {
     }
 
     pub(crate) fn to_switch_params(self) -> Result<SwitchParams, serde_json::Error> {
-        serde_json::from_value(self.params)
-    }
-
-    pub(crate) fn to_exit_params(self) -> Result<ExitParams, serde_json::Error> {
         serde_json::from_value(self.params)
     }
 }
