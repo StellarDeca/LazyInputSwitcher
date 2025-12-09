@@ -16,6 +16,12 @@
 //!         // 代码类型,注意首字母大写
 //!         // 名称应与 crate::core::SupportLanguage 枚举中保持一致
 //!         language: String,
+//!
+//!         // 光标位置 UTF-16 字符位置, 0基
+//!         cursor: {
+//!             row: usize,
+//!             column: usize
+//!         }
 //!     },
 //!
 //!     /// MethodOnly 参数
@@ -35,6 +41,7 @@
 //!         cursor: {
 //!             row: usize,
 //!             column: usize
+//!         }
 //!     },
 //!
 //!     /// Exit 参数
@@ -59,6 +66,7 @@ pub(crate) enum CommandMode {
 pub(crate) struct AnalyzeParams {
     code: String,
     language: String,
+    cursor: Cursor,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -81,19 +89,19 @@ pub(crate) struct CommandParams {
     pub(crate) params: serde_json::Value,
 }
 impl CommandParams {
-    pub(crate) fn to_analyze_data(self) -> Result<String, serde_json::Error> {
+    pub(crate) fn to_analyze_params(self) -> Result<String, serde_json::Error> {
         serde_json::from_value(self.params)
     }
 
-    pub(crate) fn to_method_only_data(self) -> Result<String, serde_json::Error> {
+    pub(crate) fn to_method_only_params(self) -> Result<String, serde_json::Error> {
         serde_json::from_value(self.params)
     }
 
-    pub(crate) fn to_switch_data(self) -> Result<String, serde_json::Error> {
+    pub(crate) fn to_switch_params(self) -> Result<String, serde_json::Error> {
         serde_json::from_value(self.params)
     }
 
-    pub(crate) fn to_exit_data(self) -> Result<String, serde_json::Error> {
+    pub(crate) fn to_exit_params(self) -> Result<String, serde_json::Error> {
         serde_json::from_value(self.params)
     }
 }
