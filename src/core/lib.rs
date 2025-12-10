@@ -32,6 +32,11 @@ impl Display for InputMethodMode {
         }
     }
 }
+impl InputMethodMode {
+    pub fn from_str(mode: String) -> Result<InputMethodMode, serde_json::Error> {
+        serde_json::from_str(&mode)
+    }
+}
 
 /// 表示当前支持的编程语言。
 ///
