@@ -97,7 +97,7 @@ impl Sever {
                     match req.command {
                         CommandMode::Analyze => self._grammar_analysis(cid, req),
                         CommandMode::MethodOnly => self._method_only(cid, req),
-                        CommandMode::Switch => self._grammar_analysis(cid, req),
+                        CommandMode::Switch => self._analyze_switch(cid, req),
                         CommandMode::Exit => {
                             return Ok(())
                         },
