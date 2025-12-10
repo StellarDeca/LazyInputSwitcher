@@ -5,7 +5,7 @@ use core_foundation::dictionary::CFDictionaryRef;
 use core_foundation::string::CFStringRef;
 
 #[link(name = "Carbon", kind = "framework")]
-extern "C" {
+unsafe extern "C" {
     /// API 常量
     pub(super) static kTISPropertyInputSourceID: CFStringRef;
 

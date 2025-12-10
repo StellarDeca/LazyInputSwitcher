@@ -38,8 +38,8 @@ impl MacOSController {
 
     pub(super) fn switch(&self, target_mode: InputMethodMode) -> Result<bool, Box<dyn Error>> {
         match target_mode {
-            InputMethodMode::Native => switch_mode(self.native),
-            InputMethodMode::English => switch_mode(self.english),
+            InputMethodMode::Native => switch_mode(self.native.as_str()),
+            InputMethodMode::English => switch_mode(self.english.as_str()),
         }
     }
 
