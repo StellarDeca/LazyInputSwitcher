@@ -1,0 +1,25 @@
+name: Run project tests
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+
+jobs:
+    test:
+        name: Test on ${{ matrix.os }}
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest]
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Install Rust tools
+              uses: dtolnay/rust-toolchain@stable
+
+            - name: Run Tests
+              run: cargo test --all
