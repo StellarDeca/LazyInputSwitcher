@@ -95,8 +95,8 @@ impl Sever {
             let response = match request {
                 Ok(req) => {
                     match req.command {
-                        CommandMode::Analyze => self._analyze_switch(cid, req),
-                        CommandMode::MethodOnly => self._method_switch(cid, req),
+                        CommandMode::Analyze => self._grammar_analysis(cid, req),
+                        CommandMode::MethodOnly => self._method_only(cid, req),
                         CommandMode::Switch => self._grammar_analysis(cid, req),
                         CommandMode::Exit => {
                             return Ok(())
@@ -146,7 +146,7 @@ impl Sever {
         ClientResponse::new(cid, true, None, Some(CommandResult::from_analyze_result(res)))
     }
 
-    fn _method_switch(&mut self, cid: u16, req: ClientRequest) -> ClientResponse {
+    fn _method_only(&mut self, cid: u16, req: ClientRequest) -> ClientResponse {
         // 处理 Command::MethodOnly 请求响应
 
         let params = match req.params.to_method_only_params() {
