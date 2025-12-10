@@ -82,6 +82,7 @@ pub(crate) struct SwitchParams {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+#[serde(transparent)]
 pub(crate) struct CommandParams {
     pub(crate) params: serde_json::Value,
 }
@@ -112,5 +113,32 @@ impl ClientRequest {
             Ok(request) => Ok(request),
             Err(json_error) => Err(json_error.to_string()),
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn from_analyze_params() {
+
+        let json_string = r#"
+            {
+                "cid": 1,
+                "command": "Analyze",
+                "params": {
+                    "code": "let x = 1;",
+                    "language": "Rust",
+                    "cursor": { "row": 0, "column": 5 }
+                }
+            }
+        "#;
+
+        let req: ClientRequest = serde_json::from_str(json_string).unwrap();
+        let analyze: AnalyzeParams = req.params.to_analyze_params().unwrap();
+        assert_eq!(analyze.code, "let x = 1;");
+        assert_eq!(analyze.language, "Rust");
+        assert_eq!(analyze.cursor.row, 0);
+        assert_eq!(analyze.cursor.column, 5);
     }
 }
