@@ -32,6 +32,7 @@ fn main() {
             _ => continue,
         };
     }
+    println!("Exiting server");
 }
 
 
@@ -73,7 +74,6 @@ impl Sever {
                 }
                 Err(ref e) if e.kind() == io::ErrorKind::WouldBlock => {
                     if Instant::now() >= deadline {
-                        eprintln!("Exiting server");
                         return Err(io::Error::new(io::ErrorKind::TimedOut, "accept timeout"))
                     }
                     std::thread::sleep(Duration::from_millis(50));
@@ -99,7 +99,6 @@ impl Sever {
                         CommandMode::MethodOnly => self._method_switch(cid, req),
                         CommandMode::Switch => self._grammar_analysis(cid, req),
                         CommandMode::Exit => {
-                            eprintln!("Exiting server");
                             return Ok(())
                         },
                     }
