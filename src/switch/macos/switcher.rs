@@ -29,10 +29,10 @@ pub(super) fn get_mode() -> Result<String, Box<dyn Error>> {
 }
 
 /// 切换到指定的输入法
-pub(super) fn switch_mode(target_id: String) -> Result<bool, Box<dyn Error>> {
+pub(super) fn switch_mode(target_id: &str) -> Result<bool, Box<dyn Error>> {
     // 创建 CFDictionary 搜索过滤器
     let key = unsafe { CFString::wrap_under_get_rule(kTISPropertyInputSourceID) };
-    let value = CFString::new(target_id.as_str());
+    let value = CFString::new(target_id);
     let filter = CFDictionary::from_CFType_pairs(&[(key.as_CFType(), value.clone().as_CFType())]);
 
     unsafe {
