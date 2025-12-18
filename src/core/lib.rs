@@ -34,7 +34,7 @@ impl Display for InputMethodMode {
 }
 impl InputMethodMode {
     pub fn from_str(mode: String) -> Result<InputMethodMode, serde_json::Error> {
-        serde_json::from_str(&mode)
+        serde_json::from_value(serde_json::Value::String(mode))
     }
 }
 
