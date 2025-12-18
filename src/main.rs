@@ -177,7 +177,7 @@ impl Sever {
         };
         let language = SupportLanguage::from_string(&params.language);
         if language.is_none() {
-            return ClientResponse::new(request.cid, true, None, None);
+            return ClientResponse::new(request.cid, false, Some("Unsupported language!".to_string()), None);
         };
 
         let language = language.unwrap();
