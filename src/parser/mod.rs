@@ -69,7 +69,8 @@ impl NodesRange {
     }
 
     pub(super) fn in_range(&self, cursor: &Cursor) -> bool {
-        // 判断cursor的位置是否在node节点里。注意 坐标都是 UTF-16字符坐标
+        // 判断cursor的位置是否在node节点里
+        // row 为 0基 行号 column 为 行内 utf-8 字节偏移量 0 基
         let (sr, sc) = (cursor.row, cursor.column);
 
         fn cmp_pos(r1: usize, c1: usize, r2: usize, c2: usize) -> i8 {
