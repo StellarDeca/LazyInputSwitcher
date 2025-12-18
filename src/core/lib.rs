@@ -89,12 +89,13 @@ impl SupportLanguage {
     }
 }
 
-/// 表示文本编辑器中的光标位置。（相对与 UTF-16 编码字符， 普通字符算一个字符，emoji表情符号算两个字符
+/// 表示文本编辑器中的光标位置
+/// row 为 0基 行号 column 为 行内 utf-8 字节偏移量 0 基
 #[derive(Serialize, Deserialize, Debug, Copy, Clone)]
 pub struct Cursor {
     /// 光标所在的行号 0基
     pub row: usize,
-    /// 光标所在的列号 0基
+    /// 行内 utf-8 字节偏移量 0基
     pub column: usize,
 }
 
