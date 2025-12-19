@@ -29,7 +29,6 @@ pub(crate) fn recv_message(client: &mut TcpStream) -> io::Result<String> {
     let mut len_buf = [0u8; 8];
     client.read_exact(&mut len_buf)?;
     let len = u64::from_be_bytes(len_buf) as usize;
-    println!("{}", len);
     // 读取消息
     let mut buffer = vec![0u8; len];
     client.read_exact(&mut buffer)?;
