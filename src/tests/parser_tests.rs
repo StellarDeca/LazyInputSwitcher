@@ -7,30 +7,58 @@ impl Cursor {
     }
 }
 
+#[derive(Debug)]
+struct CommentCheck {
+    row: usize,
+    col: usize,
+    in_comment: bool,
+}
+impl CommentCheck {
+    fn new(row: usize, col: usize, in_comment: bool) -> CommentCheck {
+        return CommentCheck { row, col, in_comment };
+    }
+}
+
+fn run_comment_test(lang: SupportLanguage, code: String, checks: &[CommentCheck]) {
+    let mut parser = Parser::new();
+    parser.add_language(lang);
+    parser.update_tree(lang, &code);
+
+    let comments = parser.get_comments(lang, &code);
+
+    for check in checks {
+        let except = if check.in_comment { "comment" } else { "code" };
+        assert_eq!(
+            comments.in_range(&Cursor::new(check.row, check.col)),
+            check.in_comment,
+            "{:?}: Test Failed at position ({}, {}) Except {}"
+            , lang, check.row, check.col, except
+        );
+    }
+}
+
 #[test]
-fn test() {
-    let code = &r#"
+fn rust() {
+    let code = r#"
 // <-- 行注释
 pub fn main() { println!("Hello World!"); }
 /**
     <--- 块注释
 **/
         "#
-    .to_string();
-    let mut parser = Parser::new();
+        .to_string();
     let lang = SupportLanguage::Rust;
-    parser.add_language(lang);
-    parser.update_tree(lang, code);
-    let res = parser.get_comments(lang, code);
-    // 判断 TS 解析是否正常, 检查边界条件 与 内部条件 文档注释同样视为单行注释 或 块注释
-    // 单行注释
-    assert_eq!(res.in_range(&Cursor::new(1, 0)), false);
-    assert_eq!(res.in_range(&Cursor::new(1, 1)), true);
-    // 代码片段
-    assert_eq!(res.in_range(&Cursor::new(2, 5)), false);
-    // 块注释
-    assert_eq!(res.in_range(&Cursor::new(3, 0)), false);
-    assert_eq!(res.in_range(&Cursor::new(3, 1)), true);
-    assert_eq!(res.in_range(&Cursor::new(5, 2)), true);
-    assert_eq!(res.in_range(&Cursor::new(5, 3)), false);
+    let checks = [
+        // 单行注释
+        CommentCheck::new(1, 0, false),
+        CommentCheck::new(1, 1, true),
+        // 代码片段
+        CommentCheck::new(2, 5, false),
+        // 块注释
+        CommentCheck::new(3, 0, false),
+        CommentCheck::new(3, 1, true),
+        CommentCheck::new(5, 2, true),
+        CommentCheck::new(5, 3, false),
+    ];
+    run_comment_test(lang, code, &checks);
 }
