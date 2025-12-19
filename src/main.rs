@@ -2,6 +2,8 @@ mod core;
 mod switch;
 mod parser;
 mod rpc;
+#[cfg(test)]
+mod tests;
 
 use crate::core::{InputMethodMode, SupportLanguage};
 use crate::parser::Parser;
