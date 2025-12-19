@@ -62,3 +62,28 @@ pub fn main() { println!("Hello World!"); }
     ];
     run_comment_test(lang, code, &checks);
 }
+
+#[test]
+fn lua() {
+    let code = r#"
+--  <--- 行注释
+print("lua test")
+--[[
+    <--- 块注释
+--]]
+    "#.to_string();
+    let lang = SupportLanguage::Lua;
+    let checks = [
+        // 单行注释
+        CommentCheck::new(1, 0, false),
+        CommentCheck::new(1, 1, true),
+        // 代码片段
+        CommentCheck::new(2, 5, false),
+        // 块注释
+        CommentCheck::new(3, 0, false),
+        CommentCheck::new(3, 1, true),
+        CommentCheck::new(5, 3, true),
+        CommentCheck::new(5, 4, false),
+    ];
+    run_comment_test(lang, code, &checks);
+}
