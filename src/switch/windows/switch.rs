@@ -5,11 +5,11 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{GetKeyboardLayout, GetKeyboard
 use windows::Win32::UI::WindowsAndMessaging::{GetWindowThreadProcessId, SendMessageW, WM_INPUTLANGCHANGEREQUEST};
 
 /// 查询系统中可用的 language
-pub(super) fn get_available_languages() -> Result<Vec<u16>, String> {
+pub(super) fn get_available_languages() -> Result<Vec<u16>, Box<dyn std::error::Error>> {
     // 查询系统中可用的 language
     let count = unsafe { GetKeyboardLayoutList(None) };
     if count <= 0 {
-        Err(String::from("Not found available language!"))
+        Err("Not found available language!".into())
     } else {
         let mut layouts: Vec<HKL> = Vec::with_capacity(count as usize);
         unsafe {
