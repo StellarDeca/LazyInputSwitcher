@@ -8,7 +8,7 @@ use tree_sitter::{Node, Query, QueryCursor, Range, StreamingIterator, Tree};
 
 pub(super) struct Parser {
     adapter: Adapter,
-    trees: HashMap<SupportLanguage, Option<Tree>>,
+    tree: Option<Tree>,
     parsers: HashMap<SupportLanguage, tree_sitter::Parser>,
     query: HashMap<SupportLanguage, Query>,
 }
@@ -17,8 +17,7 @@ impl Parser {
         let adapter = Adapter::new();
         let parsers = HashMap::new();
         let query = HashMap::new();
-        let trees = HashMap::new();
-        Parser { adapter, parsers, query, trees }
+        Parser { adapter, parsers, query, tree: None }
     }
 
     pub(super) fn add_language(&mut self, type_: SupportLanguage) {
@@ -30,21 +29,15 @@ impl Parser {
         self.query.insert(type_, query);
     }
 
-    pub(super) fn update_tree(&mut self, type_: SupportLanguage, code: &String) {
+    pub(super) fn build_tree(&mut self, type_: SupportLanguage, code: &String) {
         // 如果tree不存在，则自动新建树
-        let tree: Option<Tree>;
         let parser = self.parsers.get_mut(&type_).unwrap();
-        if let Some(old_tree) = self.trees.get(&type_) {
-            tree = parser.parse(code.as_bytes(), Option::from(old_tree));
-        } else {
-            tree = parser.parse(code.as_bytes(), None);
-        }
-        self.trees.insert(type_, tree);
+        self.tree = parser.parse(code.as_bytes(), None);
     }
 
     pub(super) fn get_comments(&mut self, type_: SupportLanguage, code: &String, ) -> NodesRange {
         let mut node_range = NodesRange::new();
-        if let Some(tree) = self.trees.get(&type_).unwrap() {
+        if let Some(tree) = &self.tree {
             let root = tree.root_node();
             let query = self.query.get(&type_).unwrap();
             let mut query_cursor = QueryCursor::new();

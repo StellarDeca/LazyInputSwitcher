@@ -22,7 +22,7 @@ impl CommentCheck {
 fn run_comment_test(lang: SupportLanguage, code: String, checks: &[CommentCheck]) {
     let mut parser = Parser::new();
     parser.add_language(lang);
-    parser.update_tree(lang, &code);
+    parser.build_tree(lang, &code);
 
     let comments = parser.get_comments(lang, &code);
 
