@@ -35,7 +35,7 @@ impl Parser {
         self.tree = parser.parse(code.as_bytes(), None);
     }
 
-    pub(super) fn get_comments(&mut self, type_: SupportLanguage, code: &String, ) -> NodesRange {
+    pub(super) fn get_comments(&mut self, type_: SupportLanguage, code: &String) -> NodesRange {
         let mut node_range = NodesRange::new();
         if let Some(tree) = &self.tree {
             let root = tree.root_node();
@@ -61,7 +61,7 @@ impl NodesRange {
         self.nodes_range.push(node.range())
     }
 
-    pub(super) fn in_range(&self, cursor: &Cursor) -> bool {
+    pub(super) fn in_range(&self, cursor: &Cursor, code: &String) -> bool {
         // 判断cursor的位置是否在node节点里
         // row 为 0基 行号 column 为 行内 utf-8 字节偏移量 0 基
         let (sr, sc) = (cursor.row, cursor.column);
@@ -83,10 +83,28 @@ impl NodesRange {
 
             // 严格判断边界条件， 左开右闭
             // 注意TreeSitter本身范围为 左闭右开区间
-            if cmp_pos(sr, sc, rs, cs) > 0 && cmp_pos(sr, sc, re, ce) < 0 {
+            //
+            // 对于cursor处于注释范围末尾时
+            // 根据cursor后接字符是否为文本结束或者换行符
+            // 如果为文本结束或者换行符
+            // 则认为cursor处在注释中
+            if cmp_pos(sr, sc, re, ce) == 0 {
+                // 当cursor恰好位于结束符位置时
+                // 分析 cursor 到 行末 之间的字符
+                // 全部为空白字符则说明无其他有意义字符 => in comment
+                // 存在非空白字符则说明存在其他有含义的字符 => not in comment
+                if let Some(mut tail) = code.get(range.end_byte..) {
+                    let end = tail.find('\n').unwrap_or(tail.len());
+                    tail = &tail[..end];
+                    if !tail.trim().is_empty() {
+                        return false;
+                    }
+                }
+                return true;
+            } else if cmp_pos(sr, sc, rs, cs) > 0 && cmp_pos(sr, sc, re, ce) < 0 {
                 return true;
             }
-        }
+        };
         false
     }
 }

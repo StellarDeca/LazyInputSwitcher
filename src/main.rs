@@ -139,9 +139,9 @@ impl Sever {
         // 更新语法树 并判断 cursor 是否在 comment 节点内部
         let language = language.unwrap();
         self.parser.add_language(language);
-        self.parser.update_tree(language, &params.code);
+        self.parser.build_tree(language, &params.code);
         let grammar = GrammarMode::from_bool(
-            self.parser.get_comments(language, &params.code).in_range(&params.cursor)
+            self.parser.get_comments(language, &params.code).in_range(&params.cursor, &params.code)
         );
 
         let res = AnalyzeResult { grammar };
@@ -185,9 +185,9 @@ impl Sever {
         let language = language.unwrap();
         // 更新语法树 并判断 cursor 是否在 comment 节点内部
         self.parser.add_language(language);
-        self.parser.update_tree(language, &params.code);
+        self.parser.build_tree(language, &params.code);
         let comment = GrammarMode::from_bool(
-            self.parser.get_comments(language, &params.code).in_range(&params.cursor)
+            self.parser.get_comments(language, &params.code).in_range(&params.cursor, &params.code)
         );
         // 根据 comment 决定是否切换输入法
         let switch = match comment {
