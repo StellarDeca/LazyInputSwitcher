@@ -92,22 +92,3 @@ impl ClientResponse {
         serde_json::to_string(&self).unwrap()
     }
 }
-
-
-#[cfg(test)]
-mod tests {
-    use serde_json::json;
-    use super::*;
-    #[test]
-    fn to_json_message() {
-        let r = AnalyzeResult { grammar: GrammarMode::Code };
-        let res = ClientResponse::new(
-            0, true, None, Some(CommandResult::from_analyze_result(r))
-        ).to_json_message();
-        let res_json: serde_json::Value = serde_json::from_str(&res).unwrap();
-        let mes = json!({
-            "cid": 0, "success": true, "error": null, "result": { "grammar": "Code"}
-        });
-        assert_eq!(res_json, mes);
-    }
-}

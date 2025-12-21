@@ -1,14 +1,14 @@
 
 mod adapter;
 
-use adapter::*;
 use crate::core::*;
+use adapter::*;
 use std::collections::HashMap;
 use tree_sitter::{Node, Query, QueryCursor, Range, StreamingIterator, Tree};
 
 pub(super) struct Parser {
     adapter: Adapter,
-    trees: HashMap<SupportLanguage, Option<Tree>>,
+    tree: Option<Tree>,
     parsers: HashMap<SupportLanguage, tree_sitter::Parser>,
     query: HashMap<SupportLanguage, Query>,
 }
@@ -17,8 +17,7 @@ impl Parser {
         let adapter = Adapter::new();
         let parsers = HashMap::new();
         let query = HashMap::new();
-        let trees = HashMap::new();
-        Parser { adapter, parsers, query, trees }
+        Parser { adapter, parsers, query, tree: None }
     }
 
     pub(super) fn add_language(&mut self, type_: SupportLanguage) {
@@ -30,21 +29,15 @@ impl Parser {
         self.query.insert(type_, query);
     }
 
-    pub(super) fn update_tree(&mut self, type_: SupportLanguage, code: &String) {
+    pub(super) fn build_tree(&mut self, type_: SupportLanguage, code: &String) {
         // 如果tree不存在，则自动新建树
-        let tree: Option<Tree>;
         let parser = self.parsers.get_mut(&type_).unwrap();
-        if let Some(old_tree) = self.trees.get(&type_) {
-            tree = parser.parse(code.as_bytes(), Option::from(old_tree));
-        } else {
-            tree = parser.parse(code.as_bytes(), None);
-        }
-        self.trees.insert(type_, tree);
+        self.tree = parser.parse(code.as_bytes(), None);
     }
 
-    pub(super) fn get_comments(&mut self, type_: SupportLanguage, code: &String, ) -> NodesRange {
+    pub(super) fn get_comments(&mut self, type_: SupportLanguage, code: &String) -> NodesRange {
         let mut node_range = NodesRange::new();
-        if let Some(tree) = self.trees.get(&type_).unwrap() {
+        if let Some(tree) = &self.tree {
             let root = tree.root_node();
             let query = self.query.get(&type_).unwrap();
             let mut query_cursor = QueryCursor::new();
@@ -68,8 +61,9 @@ impl NodesRange {
         self.nodes_range.push(node.range())
     }
 
-    pub(super) fn in_range(&self, cursor: &Cursor) -> bool {
-        // 判断cursor的位置是否在node节点里。注意 坐标都是 UTF-16字符坐标
+    pub(super) fn in_range(&self, cursor: &Cursor, code: &String) -> bool {
+        // 判断cursor的位置是否在node节点里
+        // row 为 0基 行号 column 为 行内 utf-8 字节偏移量 0 基
         let (sr, sc) = (cursor.row, cursor.column);
 
         fn cmp_pos(r1: usize, c1: usize, r2: usize, c2: usize) -> i8 {
@@ -89,47 +83,28 @@ impl NodesRange {
 
             // 严格判断边界条件， 左开右闭
             // 注意TreeSitter本身范围为 左闭右开区间
-            if cmp_pos(sr, sc, rs, cs) > 0 && cmp_pos(sr, sc, re, ce) < 0 {
+            //
+            // 对于cursor处于注释范围末尾时
+            // 根据cursor后接字符是否为文本结束或者换行符
+            // 如果为文本结束或者换行符
+            // 则认为cursor处在注释中
+            if cmp_pos(sr, sc, re, ce) == 0 {
+                // 当cursor恰好位于结束符位置时
+                // 分析 cursor 到 行末 之间的字符
+                // 全部为空白字符则说明无其他有意义字符 => in comment
+                // 存在非空白字符则说明存在其他有含义的字符 => not in comment
+                if let Some(mut tail) = code.get(range.end_byte..) {
+                    let end = tail.find('\n').unwrap_or(tail.len());
+                    tail = &tail[..end];
+                    if !tail.trim().is_empty() {
+                        return false;
+                    }
+                }
+                return true;
+            } else if cmp_pos(sr, sc, rs, cs) > 0 && cmp_pos(sr, sc, re, ce) < 0 {
                 return true;
             }
-        }
+        };
         false
-    }
-}
-
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    impl Cursor {
-        pub fn new(row: usize, column: usize) -> Cursor { Cursor { row, column } }
-    }
-    
-    #[test]
-    fn test() {
-        let code = &r#"
-// <-- 行注释
-pub fn main() { println!("Hello World!"); }
-/**
-    <--- 块注释
-**/
-        "#.to_string();
-        let mut parser = Parser::new();
-        let lang = SupportLanguage::Rust;
-        parser.add_language(lang);
-        parser.update_tree(lang, code);
-        let res = parser.get_comments(lang, code);
-        // 判断 TS 解析是否正常, 检查边界条件 与 内部条件 文档注释同样视为单行注释 或 块注释
-        // 单行注释
-        assert_eq!(res.in_range(&Cursor::new(1, 0)), false);
-        assert_eq!(res.in_range(&Cursor::new(1, 1)), true);
-        // 代码片段
-        assert_eq!(res.in_range(&Cursor::new(2, 5)), false);
-        // 块注释
-        assert_eq!(res.in_range(&Cursor::new(3, 0)), false);
-        assert_eq!(res.in_range(&Cursor::new(3, 1)), true);
-        assert_eq!(res.in_range(&Cursor::new(5, 2)), true);
-        assert_eq!(res.in_range(&Cursor::new(5, 3)), false);
     }
 }

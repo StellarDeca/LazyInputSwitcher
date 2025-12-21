@@ -11,8 +11,8 @@ mod switch;
 
 use super::InputMethodMode;
 use focus::*;
+use std::error::Error;
 use switch::*;
-use windows::Win32::Foundation::HWND;
 
 const NATIVE_LANGUAGE_ID: [u16; 1] = [2052];
 const ENGLISH_LANGUAGE_ID: [u16; 1] = [1033];
@@ -23,10 +23,9 @@ pub(super) struct WinInputMethodController {
      */
     native: u16,
     english: u16,
-    ground_handle: HWND,
 }
 impl WinInputMethodController {
-    pub(super) fn new() -> Result<Self, String> {
+    pub(super) fn new() -> Result<Self, Box<dyn Error>> {
         /*
         初始化数据结构体
         同时判断系统是否支持两种语言或者仅有一个语言支持内部状态切换
@@ -38,38 +37,30 @@ impl WinInputMethodController {
         let (native, english) = Self::check_supported_languages(&languages);
 
         if native == 0 && english == 0 {
-            return Err("Windows Input Method Config is not available to control!".to_string());
+            return Err("Windows Input Method Config is not available to control!".into());
         };
 
-        // 尝试初始化焦点窗口
-        let ground_handle = match get_ground_handle() {
-            Ok(focus) => focus,
-            Err(e) => return Err(e),
-        };
-
-        Ok(Self {
-            native,
-            english,
-            ground_handle,
-        })
+        Ok(Self { native, english })
     }
 
-    pub(super) fn get_mode(&self) -> InputMethodMode {
-        let active = get_active_language(&get_context_handle(&self.ground_handle));
+    pub(super) fn get_mode(&self) -> Result<InputMethodMode, Box<dyn Error>> {
+        let handle = get_ground_handle()?;
+        let active = get_active_language(&handle);
         if active != self.native {
-            InputMethodMode::English
+            Ok(InputMethodMode::English)
         } else {
-            InputMethodMode::Native
+            Ok(InputMethodMode::Native)
         }
     }
 
-    pub(super) fn switch_mode(&self, target_mode: InputMethodMode) -> bool {
+    pub(super) fn switch_mode(&self, target_mode: InputMethodMode) -> Result<bool, Box<dyn Error>> {
+        let handle = get_ground_handle()?;
         match target_mode {
             InputMethodMode::Native => {
-                set_active_language(&get_context_handle(&self.ground_handle), self.native)
+                Ok(set_active_language(&handle, self.native))
             }
             InputMethodMode::English => {
-                set_active_language(&get_context_handle(&self.ground_handle), self.english)
+                Ok(set_active_language(&handle, self.english))
             }
         }
     }

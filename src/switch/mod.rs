@@ -12,8 +12,8 @@ mod macos;
 #[cfg(target_os = "linux")]
 mod linux;
 
-use std::error::Error;
 use crate::core::InputMethodMode;
+use std::error::Error;
 
 pub(super) struct Switcher {
     #[cfg(target_os = "windows")]
@@ -30,7 +30,7 @@ impl Switcher {
         #[cfg(target_os = "windows")]
         match windows::WinInputMethodController::new() {
             Ok(windows_controller) => Ok(Switcher { windows_controller }),
-            Err(err) => Err(err.into()),
+            Err(err) => Err(err),
         }
 
         #[cfg(target_os = "linux")]
@@ -48,7 +48,7 @@ impl Switcher {
 
     pub(super) fn query(&self) -> Result<InputMethodMode, Box<dyn Error>> {
         #[cfg(target_os = "windows")]
-        return Ok::<InputMethodMode, Box<dyn Error>>(self.windows_controller.get_mode());
+        return self.windows_controller.get_mode();
 
         #[cfg(target_os = "linux")]
         return self.linux_controller.query();
@@ -61,7 +61,7 @@ impl Switcher {
         let mode = self.query()?;
         if target_mode != mode {
             #[cfg(target_os = "windows")]
-            return Ok::<bool, Box<dyn Error>>(self.windows_controller.switch_mode(target_mode));
+            return self.windows_controller.switch_mode(target_mode);
 
             #[cfg(target_os = "linux")]
             return self.linux_controller.switch(mode);
