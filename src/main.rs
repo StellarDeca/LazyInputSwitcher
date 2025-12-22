@@ -11,6 +11,7 @@ use crate::rpc::*;
 use crate::switch::Switcher;
 
 use std::io;
+use std::io::{stdout, Write};
 use std::net::{TcpListener, TcpStream};
 use std::sync::atomic::{AtomicU16, Ordering};
 use std::time::{Duration, Instant};
@@ -21,7 +22,9 @@ const IDLE_ACCEPT_TIMEOUT_SECS: u64 = 300;
 fn main() {
     let mut server = Sever::new();
     let (port, listener) = server.init_listener();
+    // 输出端口号并刷新stdout缓冲区
     println!("{}", port);
+    stdout().flush().unwrap();
     loop {
         // 当客户端失去连接时，等待重连
         let mut client = match server.accept_client(&listener) {
