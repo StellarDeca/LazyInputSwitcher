@@ -54,10 +54,10 @@ impl MethodController for Fcitx5Method {
     fn switch_mode(&self, target_mode: InputMethodMode) -> Result<bool, Box<dyn Error>> {
         match target_mode {
             InputMethodMode::Native => {
-                LShell::run_script("fcitx5/switch", Some(&[self.english.as_str()]))?;
+                LShell::run_script("fcitx5/switch", Some(&[self.native.as_str()]))?;
             },
             InputMethodMode::English => {
-                LShell::run_script("fcitx5/switch", Some(&[self.native.as_str()]))?;
+                LShell::run_script("fcitx5/switch", Some(&[self.english.as_str()]))?;
             }
         };
         Ok(target_mode == self.get_mode()?)
