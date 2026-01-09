@@ -67,7 +67,7 @@ impl Switcher {
             return self.linux_controller.switch(mode);
 
             #[cfg(target_os = "macos")]
-            return self.macos_controller.switch(mode);
+            return self.macos_controller.switch(target_mode);
         };
         Ok(true)
     }
