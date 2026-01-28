@@ -50,6 +50,7 @@ pub enum SupportLanguage {
     Java,
     JavaScript,
     Kotlin,
+    TypeScript,
 }
 impl SupportLanguage {
     /// SupportLanguage为可 哈希的，提高哈希表可读性
@@ -80,6 +81,8 @@ impl SupportLanguage {
             Some(SupportLanguage::JavaScript)
         } else if lang == "kotlin" {
             Some(SupportLanguage::Kotlin)
+        } else if lang == "typescript" {
+            Some(SupportLanguage::TypeScript)
         }
         else {
             None
