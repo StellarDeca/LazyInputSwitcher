@@ -1,7 +1,7 @@
 //! 全局公用的 结构体 与 枚举
 use rust_embed::RustEmbed;
+use serde::{Deserialize, Serialize};
 use std::fmt::Display;
-use serde::{Serialize, Deserialize};
 
 /// 表示输入法当前的模式状态。
 ///
@@ -72,38 +72,22 @@ impl SupportLanguage {
     /// assert!(SupportLanguage::from_string("python".to_string()).is_none());
     /// ```
     pub fn from_string(s: &String) -> Option<SupportLanguage> {
-        let lang = s.to_lowercase();
-        if lang == "rust" {
-            Some(SupportLanguage::Rust)
-        } else if lang == "python" {
-            Some(SupportLanguage::Python)
-        } else if lang == "lua" {
-            Some(SupportLanguage::Lua)
-        } else if lang == "c" {
-            Some(SupportLanguage::C)
-        } else if lang == "java" {
-            Some(SupportLanguage::Java)
-        } else if lang == "javascript" {
-            Some(SupportLanguage::JavaScript)
-        } else if lang == "kotlin" {
-            Some(SupportLanguage::Kotlin)
-        } else if lang == "typescript" {
-            Some(SupportLanguage::TypeScript)
-        } else if lang == "cpp" {
-            Some(SupportLanguage::Cpp)
-        } else if lang == "go" {
-            Some(SupportLanguage::Go)
-        } else if lang == "bash" {
-            Some(SupportLanguage::Bash)
-        } else if lang == "sql" {
-            Some(SupportLanguage::Sql)
-        } else if lang == "php" {
-            Some(SupportLanguage::Php)
-        } else if lang == "csharp" {
-            Some(SupportLanguage::CSharp)
-        }
-        else {
-            None
+        match s.to_lowercase().as_str() {
+            "rust" => Some(SupportLanguage::Rust),
+            "python" => Some(SupportLanguage::Python),
+            "lua" => Some(SupportLanguage::Lua),
+            "c" => Some(SupportLanguage::C),
+            "java" => Some(SupportLanguage::Java),
+            "javascript" => Some(SupportLanguage::JavaScript),
+            "kotlin" => Some(SupportLanguage::Kotlin),
+            "typescript" => Some(SupportLanguage::TypeScript),
+            "cpp" => Some(SupportLanguage::Cpp),
+            "go" => Some(SupportLanguage::Go),
+            "bash" => Some(SupportLanguage::Bash),
+            "sql" => Some(SupportLanguage::Sql),
+            "php" => Some(SupportLanguage::Php),
+            "csharp" => Some(SupportLanguage::CSharp),
+            _ => None,
         }
     }
 
