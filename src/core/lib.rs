@@ -54,7 +54,8 @@ pub enum SupportLanguage {
     Cpp,
     Go,
     Bash,
-    Sql
+    Sql,
+    Php
 }
 impl SupportLanguage {
     /// SupportLanguage为可 哈希的，提高哈希表可读性
@@ -95,6 +96,8 @@ impl SupportLanguage {
             Some(SupportLanguage::Bash)
         } else if lang == "sql" {
             Some(SupportLanguage::Sql)
+        } else if lang == "php" {
+            Some(SupportLanguage::Php)
         }
         else {
             None
