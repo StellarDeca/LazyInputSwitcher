@@ -21,6 +21,7 @@ impl Adapter {
         use tree_sitter_bash::LANGUAGE as bash_;
         use tree_sitter_sequel::LANGUAGE as sql_;
         use tree_sitter_php::LANGUAGE_PHP as php_;
+        use tree_sitter_c_sharp::LANGUAGE as sharp_;
 
         let mut language: HashMap<SupportLanguage, Language> = HashMap::new();
         language.insert(SupportLanguage::Rust, rust_.into());
@@ -36,6 +37,7 @@ impl Adapter {
         language.insert(SupportLanguage::Bash, bash_.into());
         language.insert(SupportLanguage::Sql, sql_.into());
         language.insert(SupportLanguage::Php, php_.into());
+        language.insert(SupportLanguage::CSharp, sharp_.into());
 
         Adapter { language }
     }
