@@ -18,6 +18,7 @@ impl Adapter {
         use tree_sitter_typescript::LANGUAGE_TYPESCRIPT as typescript_;
         use tree_sitter_cpp::LANGUAGE as cpp_;
         use tree_sitter_go::LANGUAGE as go_;
+        use tree_sitter_bash::LANGUAGE as bash_;
 
         let mut language: HashMap<SupportLanguage, Language> = HashMap::new();
         language.insert(SupportLanguage::Rust, rust_.into());
@@ -30,6 +31,7 @@ impl Adapter {
         language.insert(SupportLanguage::TypeScript, typescript_.into());
         language.insert(SupportLanguage::Cpp, cpp_.into());
         language.insert(SupportLanguage::Go, go_.into());
+        language.insert(SupportLanguage::Bash, bash_.into());
 
         Adapter { language }
     }

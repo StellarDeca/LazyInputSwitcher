@@ -52,7 +52,8 @@ pub enum SupportLanguage {
     Kotlin,
     TypeScript,
     Cpp,
-    Go
+    Go,
+    Bash
 }
 impl SupportLanguage {
     /// SupportLanguage为可 哈希的，提高哈希表可读性
@@ -89,6 +90,8 @@ impl SupportLanguage {
             Some(SupportLanguage::Cpp)
         } else if lang == "go" {
             Some(SupportLanguage::Go)
+        } else if lang == "bash" {
+            Some(SupportLanguage::Bash)
         }
         else {
             None
