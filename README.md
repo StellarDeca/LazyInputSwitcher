@@ -179,12 +179,21 @@ cargo build --release
 
 当前服务器端已适配并支持以下编程语言：
 
-- **C**
-- **Java**
-- **JavaScript**
-- **Lua**
-- **Python**
-- **Rust**
+|---------------------|
+| **C** |
+| **C++** |
+| **C#** |
+| **Java** |
+| **JavaScript** |
+| **TypeScript** |
+| **Kotlin** |
+| **Python** |
+| **Rust** |
+| **Lua** |
+| **Go** |
+| **Bash** |
+| **SQL** |
+| **PHP** |
 
 > ⚠️ 说明  
 > 服务器端仅对上述语言提供完整的 Tree-sitter 语法解析与注释节点提取能力。  
