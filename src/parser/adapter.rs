@@ -16,6 +16,7 @@ impl Adapter {
         use tree_sitter_javascript::LANGUAGE as javascript_;
         use tree_sitter_kotlin_ng::LANGUAGE as kotlin_;
         use tree_sitter_typescript::LANGUAGE_TYPESCRIPT as typescript_;
+        use tree_sitter_cpp::LANGUAGE as cpp_;
 
         let mut language: HashMap<SupportLanguage, Language> = HashMap::new();
         language.insert(SupportLanguage::Rust, rust_.into());
@@ -26,6 +27,7 @@ impl Adapter {
         language.insert(SupportLanguage::JavaScript, javascript_.into());
         language.insert(SupportLanguage::Kotlin, kotlin_.into());
         language.insert(SupportLanguage::TypeScript, typescript_.into());
+        language.insert(SupportLanguage::Cpp, cpp_.into());
 
         Adapter { language }
     }
