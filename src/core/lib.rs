@@ -53,7 +53,8 @@ pub enum SupportLanguage {
     TypeScript,
     Cpp,
     Go,
-    Bash
+    Bash,
+    Sql
 }
 impl SupportLanguage {
     /// SupportLanguage为可 哈希的，提高哈希表可读性
@@ -92,6 +93,8 @@ impl SupportLanguage {
             Some(SupportLanguage::Go)
         } else if lang == "bash" {
             Some(SupportLanguage::Bash)
+        } else if lang == "sql" {
+            Some(SupportLanguage::Sql)
         }
         else {
             None
