@@ -3,7 +3,7 @@
 use super::tis::*;
 use core_foundation::array::CFArray;
 use core_foundation::base::TCFType;
-use core_foundation::dictionary::{CFDictionary, CFDictionaryRef};
+use core_foundation::dictionary::CFDictionaryRef;
 use core_foundation::string::{CFString, CFStringRef};
 use core_foundation_sys::base::CFRelease;
 use std::error::Error;
@@ -30,27 +30,42 @@ pub(super) fn get_mode() -> Result<String, Box<dyn Error>> {
 
 /// 切换到指定的输入法
 pub(super) fn switch_mode(target_id: &str) -> Result<bool, Box<dyn Error>> {
-    // 创建 CFDictionary 搜索过滤器
-    let key = unsafe { CFString::wrap_under_get_rule(kTISPropertyInputSourceID) };
-    let value = CFString::new(target_id);
-    let filter = CFDictionary::from_CFType_pairs(&[(key.as_CFType(), value.clone().as_CFType())]);
+    let list = unsafe {
+        TISCreateInputSourceList(ptr::null_mut() as CFDictionaryRef, false)
+    };
+    if list.is_null() {
+        return Err("TISCreateInputSourceList returned null".into());
+    }
+
+    // array 拥有所有权,自动释放内存
+    let array: CFArray<TISInputSourceRef> = unsafe { CFArray::wrap_under_create_rule(list) };
+    if array.is_empty() {
+        return Err(format!("Input method '{}' not found", target_id).into());
+    }
 
     unsafe {
-        let list = TISCreateInputSourceList(filter.as_concrete_TypeRef(), false);
-        if list.is_null() {
-            return Err("TISCreateInputSourceList returned null".into());
-        }
+        for i in 0..array.len() {
+            let source = *array.get(i).unwrap();
+            let property = TISGetInputSourceProperty(source, kTISPropertyInputSourceID);
+            if property.is_null() {
+                continue;
+            }
 
-        // array 拥有所有权,自动释放内存
-        let array: CFArray<TISInputSourceRef> = CFArray::wrap_under_create_rule(list);
-        if array.is_empty() {
-            return Err(format!("Input method '{}' not found", target_id).into());
+            // 转换为 Rust String 进行比对
+            let id = CFString::wrap_under_get_rule(property as CFStringRef);
+            if id.to_string() == target_id {
+                // 成功匹配目标输入法 ID
+                let result = TISSelectInputSource(source);
+                return Ok(result == 0);
+            }
         }
-
-        let item = array.get(0).unwrap();
-        let result = TISSelectInputSource(*item);
-        Ok(result == 0)
     }
+    // 未找到 目标输入法 ID
+    Err(format!(
+        "Target ID '{}' found in init list but not found during switch.",
+        target_id
+    )
+    .into())
 }
 
 /// 获取所有可用输入法列表
