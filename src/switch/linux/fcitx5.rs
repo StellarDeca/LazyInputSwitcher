@@ -7,8 +7,8 @@ use crate::core::InputMethodMode;
 use super::lib::{StaticLinuxMethodShell as LShell};
 
 const DEFAULT_METHOD: &str = "keyboard-us";
-const ENGLISH_METHOD: [&str; 1] = ["keyboard-us"];
-const NATIVE_METHOD: [&str; 2] = ["rime", "pinyin"];
+const ENGLISH_METHOD: [&str; 2] = ["keyboard-us", "keyboard-fcitx5-colemak"];
+const NATIVE_METHOD: [&str; 3] = ["rime", "pinyin", "shuangpin"];
 
 pub(super) struct Fcitx5Method {
     pub(super) english: String,
